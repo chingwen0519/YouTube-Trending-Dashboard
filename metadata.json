@@ -1,0 +1,5 @@
+{
+  "name": "HSR YouTube Trending Dashboard",
+  "description": "A visual leaderboard that archives and displays the highest trending rank for videos from specific YouTube channels across different regions, with data fetched from a Google Sheet.",
+  "requestFramePermissions": []
+}
