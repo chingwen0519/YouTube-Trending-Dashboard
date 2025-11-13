@@ -44,6 +44,7 @@ const Controls: React.FC<ControlsProps> = ({
             <option value="week">This Week</option>
             <option value="month">This Month</option>
             <option value="3months">Last 3 Months</option>
+            <option value="since_august">Since August</option>
           </select>
           <select
             value={selectedRegion}

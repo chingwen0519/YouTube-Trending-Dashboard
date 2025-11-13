@@ -57,7 +57,12 @@ const App: React.FC = () => {
     let videosToFilter = allVideos;
 
     if (searchQuery.trim() && fuse) {
-      videosToFilter = fuse.search(searchQuery).map((result: any) => result.item);
+      // FIX: Explicitly type the Fuse.js search result to prevent `any` from propagating
+      // and causing type inference issues downstream. The result object from Fuse.js
+      // contains the original item under the `item` property.
+      // Correctly type the search result to break the `any` chain.
+      const searchResults: { item: VideoDataProcessed }[] = fuse.search(searchQuery);
+      videosToFilter = searchResults.map((result) => result.item);
     }
 
     return videosToFilter.filter(video => {
@@ -74,7 +79,15 @@ const App: React.FC = () => {
       } else if (timeRange === '3months') {
         const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 3, now.getDate());
         matchesTime = videoDate >= threeMonthsAgo;
+      } else if (timeRange === 'since_august') {
+        const targetAugust = new Date(now.getFullYear(), 7, 1); // August is month 7 (0-indexed)
+        if (now < targetAugust) {
+            // If current date is before August of this year, use last year's August
+            targetAugust.setFullYear(now.getFullYear() - 1);
+        }
+        matchesTime = videoDate >= targetAugust;
       }
+
 
       return matchesRegion && matchesTime;
     });
@@ -109,7 +122,7 @@ const App: React.FC = () => {
                     <h2 id={groupKey} className="text-2xl font-bold text-gray-800 dark:text-gray-200 pb-4 border-b-2 border-gray-200 dark:border-gray-700">
                         {groupKey}
                     </h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pt-6 animate-fade-in">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 pt-6 animate-fade-in">
                         {videosInGroup.map((video, index) => (
                           <VideoCard key={video.id} video={video} index={index} />
                         ))}
